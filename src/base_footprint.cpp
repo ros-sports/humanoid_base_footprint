@@ -19,7 +19,6 @@ Rationale: base_footprint provides a fairly stable 2D planar representation of t
 #include <tf2_ros/transform_listener.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2/utils.h>
-#include "bitbots_quintic_walk/WalkingDebug.h"
 
 
 class BaseFootprintBroadcaster
@@ -31,7 +30,6 @@ private:
     tf2_ros::Buffer tfBuffer;
     tf2_ros::TransformListener tfListener;
     ros::Subscriber support_foot_subscriber;
-    void support_foot_callback(const bitbots_quintic_walk::WalkingDebug::ConstPtr& walk_msg);
     bool is_left_support, got_support_foot;
 };
 

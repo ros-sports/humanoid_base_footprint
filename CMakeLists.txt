@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(bitbots_base_footprint)
+project(humanoid_base_footprint)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -10,7 +10,6 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_geometry_msgs
   message_generation
   geometry_msgs
-  bitbots_quintic_walk
 )
 
 catkin_python_setup()
