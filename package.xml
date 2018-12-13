@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>humanoid_base_footprint</name>
   <version>1.0.0</version>
   <description>publishes a transform to the base footprint of the robot, based on the orientation and position of the feet.</description>
@@ -11,28 +11,14 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>rospy</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>rosconsole</build_depend>
-  <build_depend>message_generation</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>tf2</build_depend>
-  <build_depend>tf_conversions</build_depend>
-  <build_depend>message_generation</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-
-
-  <run_depend>rospy</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>rosconsole</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>message_runtime</run_depend>
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>tf2</run_depend>
-  <run_depend>tf_conversions</run_depend>
-  <run_depend>message_generation</run_depend>
-  <run_depend>geometry_msgs</run_depend>
+  <depend>rospy</depend>
+  <depend>roscpp</depend>
+  <depend>rosconsole</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf_conversions</depend>
+  <depend>geometry_msgs</depend>
 
 
   <export>
