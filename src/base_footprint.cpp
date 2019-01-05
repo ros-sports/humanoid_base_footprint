@@ -14,6 +14,7 @@ Rationale: base_footprint provides a fairly stable 2D planar representation of t
 
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
+#include <std_msgs/Char.h>
 #include <std_msgs/Time.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
@@ -29,8 +30,8 @@ private:
     geometry_msgs::TransformStamped tf;
     tf2_ros::Buffer tfBuffer;
     tf2_ros::TransformListener tfListener;
-    ros::Subscriber support_foot_subscriber;
     bool is_left_support, got_support_foot;
+    void supportFootCallback(const std_msgs::Char msg);
 };
 
 BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10.0)),  tfListener(tfBuffer)
@@ -38,6 +39,8 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
     //setup tf listener and broadcaster as class members
     
     ros::NodeHandle n("~");
+    got_support_foot = false;
+    ros::Subscriber support_foot_subscriber = n.subscribe("/walk_support_state", 1, &BaseFootprintBroadcaster::supportFootCallback, this);
 
     tf = geometry_msgs::TransformStamped();
     
@@ -45,6 +48,7 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
     ros::Rate r(30.0);
     while(ros::ok())
     {
+        ros::spinOnce();
         geometry_msgs::TransformStamped tf_right, 
                                         tf_left, 
                                         support_foot, 
@@ -55,16 +59,31 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
         try{
             tf_right = tfBuffer.lookupTransform("base_link", "r_sole", ros::Time::now(), ros::Duration(0.1));
             tf_left = tfBuffer.lookupTransform("base_link", "l_sole",  ros::Time::now(), ros::Duration(0.1));
-            
-            // check which foot is support foot (which foot is on the ground)
-            if(tf_right.transform.translation.z < tf_left.transform.translation.z) {
-                support_foot = tf_right;
-                non_support_foot = tf_left;
-            } else {
-                support_foot = tf_left;
-                non_support_foot = tf_right;
-            }
 
+            if(got_support_foot)
+            {
+                if(is_left_support)
+                {
+                    support_foot = tf_left;
+                    non_support_foot = tf_right;
+                }
+                else
+                {
+                    support_foot = tf_right;
+                    non_support_foot = tf_left;
+                }
+            }
+            else
+            {
+                // check which foot is support foot (which foot is on the ground)
+                if(tf_right.transform.translation.z < tf_left.transform.translation.z) {
+                    support_foot = tf_right;
+                    non_support_foot = tf_left;
+                } else {
+                    support_foot = tf_left;
+                    non_support_foot = tf_right;
+                }
+            }
             // get the position of the non support foot in the support frame, used for computing the barycenter
             non_support_foot_in_support_foot_frame = tfBuffer.lookupTransform(support_foot.child_frame_id, 
                                                                               non_support_foot.child_frame_id,
@@ -113,6 +132,12 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
 
         r.sleep();
     }
+}
+
+void BaseFootprintBroadcaster::supportFootCallback(const std_msgs::Char msg)
+{
+    got_support_foot = true;
+    is_left_support = (msg.data == 'l');
 }
 
 int main(int argc, char **argv)
