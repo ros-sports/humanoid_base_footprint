@@ -8,8 +8,10 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   tf2
   tf2_geometry_msgs
+  tf_conversions
   message_generation
   geometry_msgs
+  rospy
 )
 
 catkin_package()

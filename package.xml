@@ -18,14 +18,15 @@
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>tf2</depend>
+  <depend>tf2_geometry_msgs</depend>
   <depend>tf_conversions</depend>
   <depend>geometry_msgs</depend>
-
+  <depend>message_generation</depend>
 
   <export>
     <bitbots_documentation>
       <language>python2</language>
-      <status>tested_viz</status>
+      <status>tested_integration</status>
     </bitbots_documentation>
     <rosdoc config="rosdoc.yaml"/>
   </export>
