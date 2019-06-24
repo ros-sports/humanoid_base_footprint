@@ -40,7 +40,8 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
     
     ros::NodeHandle n("~");
     got_support_foot = false;
-    ros::Subscriber support_foot_subscriber = n.subscribe("/walk_support_state", 1, &BaseFootprintBroadcaster::supportFootCallback, this, ros::TransportHints().tcpNoDelay());
+    ros::Subscriber walking_support_foot_subscriber = n.subscribe("/walk_support_state", 1, &BaseFootprintBroadcaster::supportFootCallback, this, ros::TransportHints().tcpNoDelay());
+    ros::Subscriber dynamic_kick_support_foot_subscriber = n.subscribe("/dynamic_kick_support_state", 1, &BaseFootprintBroadcaster::supportFootCallback, this, ros::TransportHints().tcpNoDelay());
 
     tf = geometry_msgs::TransformStamped();
     
