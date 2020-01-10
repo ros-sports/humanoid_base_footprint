@@ -13,9 +13,7 @@ Rationale: base_footprint provides a fairly stable 2D planar representation of t
 */
 
 #include <ros/ros.h>
-#include <sensor_msgs/Imu.h>
 #include <std_msgs/Char.h>
-#include <std_msgs/Time.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
