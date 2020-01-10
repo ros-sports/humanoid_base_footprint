@@ -12,7 +12,9 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   geometry_msgs
   rospy
+  bitbots_docs
 )
+enable_bitbots_docs()
 
 catkin_package()
 
