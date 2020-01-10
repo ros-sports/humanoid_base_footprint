@@ -12,9 +12,9 @@ A more elaborate description of this concept is described in REP120_.
 Subscriptions 
 ~~~~~~~~~~~~~
 
-/walk_support_state -- std_msgs/Char
+``/walk_support_state`` -- std_msgs/Char
 
-/dynamic_kick_support_state -- std_msgs/Char
+``/dynamic_kick_support_state`` -- std_msgs/Char
 
 Publishes
 ~~~~~~~~~
@@ -24,7 +24,7 @@ nothing
 TFs
 ~~~
 
-base_link --> base_footprint
+``base_link`` --> ``base_footprint``
 
 
 
