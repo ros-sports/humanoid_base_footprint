@@ -111,7 +111,7 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
 
             // Convert tf to eigen quaternion
             Eigen::Quaterniond eigen_quat, eigen_quat_out;
-            tf2::convert(imu_rotation, eigen_quat);
+            tf2::convert(odom.transform.rotation, eigen_quat);
 
             // Remove yaw from quaternion
             rot_conv::QuatWithEYaw(eigen_quat, yaw, eigen_quat_out);
@@ -121,7 +121,7 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
 
             tf2::convert(eigen_quat_out, tf_quat_out);
 
-            base_footprint.pose.orientation = f2::toMsg(tf_quat_out);
+            base_footprint.pose.orientation = tf2::toMsg(tf_quat_out);
 
             // transform the position and orientation of the base footprint into the base_link frame
             tf2::doTransform(base_footprint, base_footprint_in_base_link, support_to_base_link);
