@@ -17,7 +17,9 @@ Rationale: base_footprint provides a fairly stable 2D planar representation of t
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <rot_conv/rot_conv.h>
 #include <tf2/utils.h>
+#include <Eigen/Geometry>
 
 
 class BaseFootprintBroadcaster
@@ -48,16 +50,17 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
     while(ros::ok())
     {
         ros::spinOnce();
-        geometry_msgs::TransformStamped tf_right, 
-                                        tf_left, 
-                                        support_foot, 
-                                        non_support_foot, 
-                                        non_support_foot_in_support_foot_frame, 
+        geometry_msgs::TransformStamped tf_right,
+                                        tf_left,
+                                        odom,
+                                        support_foot,
+                                        non_support_foot,
                                         base_footprint_in_support_foot_frame;
 
         try{
             tf_right = tfBuffer.lookupTransform("base_link", "r_sole", ros::Time::now(), ros::Duration(0.1));
             tf_left = tfBuffer.lookupTransform("base_link", "l_sole",  ros::Time::now(), ros::Duration(0.1));
+            odom = tfBuffer.lookupTransform("base_link", "odom",  ros::Time::now(), ros::Duration(0.1));
 
             if(got_support_foot)
             {
@@ -105,11 +108,20 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
             // get yaw from base link
             double yaw;
             yaw = tf2::getYaw(support_to_base_link.transform.rotation);
-            
-            // pitch and roll from support foot, yaw from base link
-            tf2::Quaternion rotation;
-            rotation.setRPY(0.0,0.0,yaw);
-            base_footprint.pose.orientation = tf2::toMsg(rotation);
+
+            // Convert tf to eigen quaternion
+            Eigen::Quaterniond eigen_quat, eigen_quat_out;
+            tf2::convert(imu_rotation, eigen_quat);
+
+            // Remove yaw from quaternion
+            rot_conv::QuatWithEYaw(eigen_quat, yaw, eigen_quat_out);
+
+            // Convert eigen to tf quaternion
+            tf2::Quaternion tf_quat_out;
+
+            tf2::convert(eigen_quat_out, tf_quat_out);
+
+            base_footprint.pose.orientation = f2::toMsg(tf_quat_out);
 
             // transform the position and orientation of the base footprint into the base_link frame
             tf2::doTransform(base_footprint, base_footprint_in_base_link, support_to_base_link);
