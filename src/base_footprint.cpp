@@ -3,10 +3,10 @@ taken from REP120
 
 base_footprint
 
-The base_footprint is the representation of the robot position on the floor. 
-The floor is usually the level where the supporting leg rests, 
-i.e. z = min(l_sole_z, r_sole_z) where l_sole_z and r_sole_z are the left and right sole height respecitvely. 
-The translation component of the frame should be the barycenter of the feet projections on the floor. 
+The base_footprint is the representation of the robot position on the floor.
+The floor is usually the level where the supporting leg rests,
+i.e. z = min(l_sole_z, r_sole_z) where l_sole_z and r_sole_z are the left and right sole height respecitvely.
+The translation component of the frame should be the barycenter of the feet projections on the floor.
 With respect to the odom frame, the roll and pitch angles should be zero and the yaw angle should correspond to the base_link yaw angle.
 
 Rationale: base_footprint provides a fairly stable 2D planar representation of the humanoid even while walking and swaying with the base_link.
@@ -14,6 +14,7 @@ Rationale: base_footprint provides a fairly stable 2D planar representation of t
 
 #include <ros/ros.h>
 #include <std_msgs/Char.h>
+#include <tf2_eigen/tf2_eigen.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
@@ -37,14 +38,14 @@ private:
 BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10.0)),  tfListener(tfBuffer)
 {
     //setup tf listener and broadcaster as class members
-    
+
     ros::NodeHandle n("~");
     got_support_foot = false;
     ros::Subscriber walking_support_foot_subscriber = n.subscribe("/walk_support_state", 1, &BaseFootprintBroadcaster::supportFootCallback, this, ros::TransportHints().tcpNoDelay());
     ros::Subscriber dynamic_kick_support_foot_subscriber = n.subscribe("/dynamic_kick_support_state", 1, &BaseFootprintBroadcaster::supportFootCallback, this, ros::TransportHints().tcpNoDelay());
 
     tf = geometry_msgs::TransformStamped();
-    
+
     static tf2_ros::TransformBroadcaster br;
     ros::Rate r(30.0);
     while(ros::ok())
@@ -55,6 +56,7 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
                                         odom,
                                         support_foot,
                                         non_support_foot,
+                                        non_support_foot_in_support_foot_frame,
                                         base_footprint_in_support_foot_frame;
 
         try{
@@ -87,13 +89,13 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
                 }
             }
             // get the position of the non support foot in the support frame, used for computing the barycenter
-            non_support_foot_in_support_foot_frame = tfBuffer.lookupTransform(support_foot.child_frame_id, 
+            non_support_foot_in_support_foot_frame = tfBuffer.lookupTransform(support_foot.child_frame_id,
                                                                               non_support_foot.child_frame_id,
                                                                               support_foot.header.stamp,
                                                                               ros::Duration(0.1));
 
-            geometry_msgs::TransformStamped support_to_base_link = tfBuffer.lookupTransform(support_foot.header.frame_id,  
-                                                                                            support_foot.child_frame_id, 
+            geometry_msgs::TransformStamped support_to_base_link = tfBuffer.lookupTransform(support_foot.header.frame_id,
+                                                                                            support_foot.child_frame_id,
                                                                                             support_foot.header.stamp);
 
             geometry_msgs::PoseStamped base_footprint, base_footprint_in_base_link;
