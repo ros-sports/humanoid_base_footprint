@@ -1,4 +1,5 @@
-doc/_build
-doc/_generated
-doc/manifest.yaml
-doc/html
+# auto-generated documentation
+**/docs/_build
+**/docs/_out
+**/docs/cppapi
+**/docs/pyapi
