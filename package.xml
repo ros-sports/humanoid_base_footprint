@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>humanoid_base_footprint</name>
-  <version>1.0.1</version>
+  <version>1.1.0</version>
 
   <description>Publishes a transform to the base footprint of the robot, based on the orientation and position of the feet.</description>
 
