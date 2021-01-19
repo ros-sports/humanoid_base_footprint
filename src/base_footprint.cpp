@@ -13,6 +13,7 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
 
     static tf2_ros::TransformBroadcaster br;
     ros::Rate r(30.0);
+    ros::Time last_published_time;
     while(ros::ok())
     {
         ros::spinOnce();
@@ -108,7 +109,10 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
             tf.transform.translation.y = base_footprint_in_base_link.pose.position.y;
             tf.transform.translation.z = base_footprint_in_base_link.pose.position.z;
             tf.transform.rotation = base_footprint.pose.orientation;
-            br.sendTransform(tf);
+            if (tf.header.stamp != last_published_time) {
+              br.sendTransform(tf);
+              last_published_time = tf.header.stamp;
+            }
 
         } catch(...){
             //ROS_WARN_THROTTLE(2, "Can not publish base_footprint, check your tf tree");
