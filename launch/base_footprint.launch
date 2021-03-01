@@ -1,4 +1,10 @@
 <launch>
-    <node name="base_footprint_publisher" pkg="humanoid_base_footprint" type="base_footprint">
+    <arg name="tf_prefix" value="$(eval optenv('ROS_NAMESPACE') + '/' if optenv('ROS_NAMESPACE') !=  '' else '')"/>
+    <node name="base_footprint_publisher" pkg="humanoid_base_footprint" type="base_footprint" output="screen">
+        <param name="base_link_frame" value="$(arg tf_prefix)base_link"/>
+        <param name="base_footprint_frame" value="$(arg tf_prefix)base_footprint"/>
+        <param name="r_sole_frame" value="$(arg tf_prefix)r_sole"/>
+        <param name="l_sole_frame" value="$(arg tf_prefix)l_sole"/>
+        <param name="odom_frame" value="$(arg tf_prefix)odom"/>
     </node>
 </launch>
