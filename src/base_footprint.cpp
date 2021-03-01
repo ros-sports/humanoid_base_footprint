@@ -4,10 +4,17 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
 {
     //setup tf listener and broadcaster as class members
 
-    ros::NodeHandle n("~");
+    ros::NodeHandle n;
+    ros::NodeHandle pnh("~");
+    std::string base_link_frame, base_footprint_frame, r_sole_frame, l_sole_frame, odom_frame;
+    pnh.param<std::string>("base_link_frame", base_link_frame, "base_link");
+    pnh.param<std::string>("base_footprint_frame", base_footprint_frame, "base_footprint");
+    pnh.param<std::string>("r_sole_frame", r_sole_frame, "r_sole");
+    pnh.param<std::string>("l_sole_frame", l_sole_frame, "l_sole");
+    pnh.param<std::string>("odom_frame", odom_frame, "odom");
     got_support_foot = false;
-    ros::Subscriber walking_support_foot_subscriber = n.subscribe("/walk_support_state", 1, &BaseFootprintBroadcaster::supportFootCallback, this, ros::TransportHints().tcpNoDelay());
-    ros::Subscriber dynamic_kick_support_foot_subscriber = n.subscribe("/dynamic_kick_support_state", 1, &BaseFootprintBroadcaster::supportFootCallback, this, ros::TransportHints().tcpNoDelay());
+    ros::Subscriber walking_support_foot_subscriber = n.subscribe("walk_support_state", 1, &BaseFootprintBroadcaster::supportFootCallback, this, ros::TransportHints().tcpNoDelay());
+    ros::Subscriber dynamic_kick_support_foot_subscriber = n.subscribe("dynamic_kick_support_state", 1, &BaseFootprintBroadcaster::supportFootCallback, this, ros::TransportHints().tcpNoDelay());
 
     tf = geometry_msgs::TransformStamped();
 
@@ -26,9 +33,9 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
                                         base_footprint_in_support_foot_frame;
 
         try{
-            tf_right = tfBuffer.lookupTransform("base_link", "r_sole", ros::Time::now(), ros::Duration(0.1));
-            tf_left = tfBuffer.lookupTransform("base_link", "l_sole",  ros::Time::now(), ros::Duration(0.1));
-            odom = tfBuffer.lookupTransform("base_link", "odom",  ros::Time::now(), ros::Duration(0.1));
+            tf_right = tfBuffer.lookupTransform(base_link_frame, r_sole_frame, ros::Time::now(), ros::Duration(0.1));
+            tf_left = tfBuffer.lookupTransform(base_link_frame, l_sole_frame,  ros::Time::now(), ros::Duration(0.1));
+            odom = tfBuffer.lookupTransform(base_link_frame, odom_frame,  ros::Time::now(), ros::Duration(0.1));
 
             if(got_support_foot)
             {
@@ -104,7 +111,7 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
             // set the broadcasted transform to the position and orientation of the base footprint
             tf.header.stamp = base_footprint_in_base_link.header.stamp;
             tf.header.frame_id = base_footprint_in_base_link.header.frame_id;
-            tf.child_frame_id = "base_footprint";
+            tf.child_frame_id = base_footprint_frame;
             tf.transform.translation.x = base_footprint_in_base_link.pose.position.x;
             tf.transform.translation.y = base_footprint_in_base_link.pose.position.y;
             tf.transform.translation.z = base_footprint_in_base_link.pose.position.z;
