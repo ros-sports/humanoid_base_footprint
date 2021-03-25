@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   bitbots_docs
   rotconv
+  bitbots_msgs
 )
 
 find_package(Eigen3 REQUIRED)

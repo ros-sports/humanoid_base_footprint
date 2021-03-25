@@ -21,6 +21,8 @@ Rationale: base_footprint provides a fairly stable 2D planar representation of t
 #include <rot_conv/rot_conv.h>
 #include <tf2/utils.h>
 #include <Eigen/Geometry>
+#include <bitbots_msgs/SupportState.h>
+
 
 class BaseFootprintBroadcaster
 {
@@ -31,5 +33,5 @@ private:
     tf2_ros::Buffer tfBuffer;
     tf2_ros::TransformListener tfListener;
     bool is_left_support, got_support_foot;
-    void supportFootCallback(const std_msgs::Char msg);
+    void supportFootCallback(const bitbots_msgs::SupportState msg);
 };
