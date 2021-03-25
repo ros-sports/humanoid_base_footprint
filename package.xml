@@ -26,6 +26,8 @@
   <depend>tf_conversions</depend>
   <depend>geometry_msgs</depend>
   <depend>message_generation</depend>
+  <depend>bitbots_docs</depend>
+  <depend>bitbots_msgs</depend>
 
   <export>
     <bitbots_documentation>

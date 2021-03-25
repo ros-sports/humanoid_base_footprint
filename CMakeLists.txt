@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   rospy
   bitbots_docs
+  bitbots_msgs
   rotconv
 )
 
