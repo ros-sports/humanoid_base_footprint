@@ -130,10 +130,10 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster() : tfBuffer(ros::Duration(10
     }
 }
 
-void BaseFootprintBroadcaster::supportFootCallback(const std_msgs::Char msg)
+void BaseFootprintBroadcaster::supportFootCallback(const bitbots_msgs::SupportState msg)
 {
     got_support_foot = true;
-    is_left_support = (msg.data == 'l');
+    is_left_support = (msg.state == bitbots_msgs::SupportState::LEFT);
 }
 
 int main(int argc, char **argv)
