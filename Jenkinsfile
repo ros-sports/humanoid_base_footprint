@@ -1,5 +1,7 @@
-@Library('bitbots_jenkins_library') import de.bitbots.jenkins.PackageDefinition
+@Library('bitbots_jenkins_library') import de.bitbots.jenkins.*;
 
-bitbotsPipeline([
-    new PackageDefinition("humanoid_base_footprint", true)
-] as PackageDefinition[])
+defineProperties()
+
+def pipeline = new BitbotsPipeline(this, env, currentBuild, scm)
+pipeline.configurePipelineForPackage(new PackagePipelineSettings(new PackageDefinition("humanoid_base_footprint", ".")))
+pipeline.execute()
