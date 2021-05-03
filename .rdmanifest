@@ -1,0 +1,25 @@
+---
+# See http://doku.bit-bots.de/meta/manual/software/ci.html#make-package-resolvable-in-ci
+check-presence-script: '#!/bin/bash
+
+  test -d $BITBOTS_CATKIN_WORKSPACE/src/humanoid_base_footprint'
+depends:
+- bitbots_docs
+- bitbots_msgs
+- geometry_msgs
+- message_generation
+- rosconsole
+- roscpp
+- rospy
+- rotconv
+- sensor_msgs
+- std_msgs
+- tf2
+- tf2_eigen
+- tf2_geometry_msgs
+- tf_conversions
+exec-path: humanoid_base_footprint-master
+install-script: '#!/bin/bash
+
+  cp -r . $BITBOTS_CATKIN_WORKSPACE/src/humanoid_base_footprint'
+uri: https://github.com/bit-bots/humanoid_base_footprint/archive/refs/heads/master.tar.gz
