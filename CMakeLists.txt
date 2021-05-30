@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(humanoid_base_footprint)
+add_compile_options(-Wall -Werror -Wno-unused)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
