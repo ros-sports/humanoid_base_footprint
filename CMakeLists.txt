@@ -47,7 +47,8 @@ add_compile_options(-Wall -Werror -Wno-unused)
 
 find_package(Eigen3 REQUIRED)
 
-#enable_bitbots_docs()
+include(${CMAKE_BINARY_DIR}/../bitbots_docs/enable_bitbots_docs.cmake)
+enable_bitbots_docs()
 
 ## Declare a C++ executable
 add_executable(base_footprint src/base_footprint.cpp)
@@ -69,5 +70,11 @@ ament_export_dependencies(tf2_eigen)
 ament_export_dependencies(rotconv)
 ament_export_dependencies(rosidl_default_generators)
 ament_export_include_directories(${INCLUDE_DIRS})
+
+install(TARGETS base_footprint
+        DESTINATION lib/${PROJECT_NAME})
+
+install(DIRECTORY launch
+        DESTINATION share/${PROJECT_NAME})
 
 ament_package()

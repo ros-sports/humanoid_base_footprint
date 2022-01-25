@@ -25,15 +25,15 @@ Rationale: base_footprint provides a fairly stable 2D planar representation of t
 #include <unistd.h>
 using std::placeholders::_1;
 
-
-class BaseFootprintBroadcaster: public rclcpp::Node
-{
-public:
-    BaseFootprintBroadcaster();
-private:
-    geometry_msgs::msg::TransformStamped tf;
-    std::unique_ptr<tf2_ros::Buffer> tfBuffer;
-    std::shared_ptr<tf2_ros::TransformListener> tfListener;
-    bool is_left_support, got_support_foot;
-    void supportFootCallback(const bitbots_msgs::msg::SupportState msg);
+class BaseFootprintBroadcaster : public rclcpp::Node {
+ public:
+  BaseFootprintBroadcaster();
+  void loop();
+ private:
+  geometry_msgs::msg::TransformStamped tf_;
+  std::unique_ptr<tf2_ros::Buffer> tfBuffer_;
+  std::shared_ptr<tf2_ros::TransformListener> tfListener_;
+  bool is_left_support_, got_support_foot_;
+  std::string base_link_frame_, base_footprint_frame_, r_sole_frame_, l_sole_frame_, odom_frame_;
+  void supportFootCallback(const bitbots_msgs::msg::SupportState msg);
 };
