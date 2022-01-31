@@ -19,13 +19,13 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster()
   this->declare_parameter<std::string>("odom_frame_", "odom");
   this->get_parameter("odom_frame_", odom_frame_);
   got_support_foot_ = false;
-  rclcpp::Subscription<bitbots_msgs::msg::SupportState>::SharedPtr walking_support_foot_subscriber =
+  walking_support_foot_subscriber_ =
       this->create_subscription<bitbots_msgs::msg::SupportState>("walk_support_state",
                                                                  1,
                                                                  std::bind(&BaseFootprintBroadcaster::supportFootCallback,
                                                                            this,
                                                                            _1));
-  rclcpp::Subscription<bitbots_msgs::msg::SupportState>::SharedPtr dynamic_kick_support_foot_subscriber =
+  dynamic_kick_support_foot_subscriber_ =
       this->create_subscription<bitbots_msgs::msg::SupportState>("dynamic_kick_support_state",
                                                                  1,
                                                                  std::bind(&BaseFootprintBroadcaster::supportFootCallback,
@@ -36,7 +36,7 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster()
 void BaseFootprintBroadcaster::loop() {
   tf_ = geometry_msgs::msg::TransformStamped();
 
-  static std::unique_ptr<tf2_ros::TransformBroadcaster> br;
+  static std::unique_ptr<tf2_ros::TransformBroadcaster> br = std::make_unique<tf2_ros::TransformBroadcaster>(this);
   auto node_pointer = this->shared_from_this();
 
   rclcpp::Rate r(30.0);

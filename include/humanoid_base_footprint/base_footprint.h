@@ -36,4 +36,6 @@ class BaseFootprintBroadcaster : public rclcpp::Node {
   bool is_left_support_, got_support_foot_;
   std::string base_link_frame_, base_footprint_frame_, r_sole_frame_, l_sole_frame_, odom_frame_;
   void supportFootCallback(const bitbots_msgs::msg::SupportState msg);
+  rclcpp::Subscription<bitbots_msgs::msg::SupportState>::SharedPtr walking_support_foot_subscriber_;
+  rclcpp::Subscription<bitbots_msgs::msg::SupportState>::SharedPtr dynamic_kick_support_foot_subscriber_;
 };
