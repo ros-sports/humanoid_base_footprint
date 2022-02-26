@@ -39,9 +39,9 @@ void BaseFootprintBroadcaster::loop() {
   static std::unique_ptr<tf2_ros::TransformBroadcaster> br = std::make_unique<tf2_ros::TransformBroadcaster>(this);
   auto node_pointer = this->shared_from_this();
 
-  rclcpp::Rate r(30.0);
   rclcpp::Time last_published_time;
   while (rclcpp::ok()) {
+    rclcpp::Time startTime = this->get_clock()->now();
     rclcpp::spin_some(node_pointer);
     geometry_msgs::msg::TransformStamped tf_right,
         tf_left,
@@ -151,7 +151,8 @@ void BaseFootprintBroadcaster::loop() {
       continue;
     }
 
-    r.sleep();
+    this->get_clock()->sleep_until(
+      startTime + rclcpp::Duration::from_nanoseconds(1e9 / 30));
   }
 }
 
