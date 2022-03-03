@@ -21,7 +21,7 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster()
   std::vector<std::string> support_state_topics;
   this->get_parameter("support_state_topics", support_state_topics);
   for (auto topic: support_state_topics) {
-    this->create_subscription<bitbots_msgs::msg::SupportState>(topic,
+    this->create_subscription<biped_interfaces::msg::Phase>(topic,
                                                                1,
                                                                std::bind(&BaseFootprintBroadcaster::supportFootCallback,
                                                                          this,
@@ -152,9 +152,9 @@ void BaseFootprintBroadcaster::loop() {
   }
 }
 
-void BaseFootprintBroadcaster::supportFootCallback(const bitbots_msgs::msg::SupportState msg) {
+void BaseFootprintBroadcaster::supportFootCallback(const biped_interfaces::msg::Phase msg) {
   got_support_foot_ = true;
-  is_left_support_ = (msg.state == bitbots_msgs::msg::SupportState::LEFT);
+  is_left_support_ = (msg.phase == biped_interfaces::msg::Phase::LEFT_STANCE);
 }
 
 int main(int argc, char **argv) {

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <package format="2">
   <name>humanoid_base_footprint</name>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
 
   <description>Publishes a transform to the base footprint of the robot, based on the orientation and position of the feet.</description>
 
@@ -25,7 +25,7 @@
   <depend>tf2_geometry_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>message_generation</depend>
-  <depend>bitbots_msgs</depend>
+  <depend>biped_interfaces</depend>
 
   <export>
     <rosdoc config="rosdoc.yaml" />
