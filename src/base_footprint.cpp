@@ -5,19 +5,16 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster()
       tfBuffer_(std::make_unique<tf2_ros::Buffer>(this->get_clock())),
       tfListener_(std::make_shared<tf2_ros::TransformListener>(*tfBuffer_)) {
   //setup tf listener and broadcaster as class members
-
-
-
-  this->declare_parameter<std::string>("base_link_frame_", "base_link");
-  this->get_parameter("base_link_frame_", base_link_frame_);
+  this->declare_parameter<std::string>("base_link_frame", "base_link");
+  this->get_parameter("base_link_frame", base_link_frame_);
   this->declare_parameter<std::string>("base_footprint_frame", "base_footprint");
   this->get_parameter("base_footprint_frame", base_footprint_frame_);
-  this->declare_parameter<std::string>("r_sole_frame_", "r_sole");
-  this->get_parameter("r_sole_frame_", r_sole_frame_);
-  this->declare_parameter<std::string>("l_sole_frame_", "l_sole");
-  this->get_parameter("l_sole_frame_", l_sole_frame_);
-  this->declare_parameter<std::string>("odom_frame_", "odom");
-  this->get_parameter("odom_frame_", odom_frame_);
+  this->declare_parameter<std::string>("r_sole_frame", "r_sole");
+  this->get_parameter("r_sole_frame", r_sole_frame_);
+  this->declare_parameter<std::string>("l_sole_frame", "l_sole");
+  this->get_parameter("l_sole_frame", l_sole_frame_);
+  this->declare_parameter<std::string>("odom_frame", "odom");
+  this->get_parameter("odom_frame", odom_frame_);
   got_support_foot_ = false;
   walking_support_foot_subscriber_ =
       this->create_subscription<bitbots_msgs::msg::SupportState>("walk_support_state",
@@ -83,7 +80,7 @@ void BaseFootprintBroadcaster::loop() {
           non_support_foot = tf_right;
         }
       }
-      // get the position of the non support foot in the support frame, used for computing the barycenter
+      // get the position of the non-support foot in the support frame, used for computing the barycenter
       non_support_foot_in_support_foot_frame = tfBuffer_->lookupTransform(support_foot.child_frame_id,
                                                                           non_support_foot.child_frame_id,
                                                                           support_foot.header.stamp,
@@ -111,7 +108,7 @@ void BaseFootprintBroadcaster::loop() {
       // Convert tf to eigen quaternion
       Eigen::Quaterniond eigen_quat
           (odom.transform.rotation.w, odom.transform.rotation.x, odom.transform.rotation.y, odom.transform.rotation.z);
-      //cant use this out of some reasons tf2::convert(odom.transform.rotation, eigen_quat);
+      //can't use this out of some reasons tf2::convert(odom.transform.rotation, eigen_quat);
 
       // Remove yaw from quaternion
       Eigen::Quaterniond eigen_quat_out;
@@ -152,7 +149,7 @@ void BaseFootprintBroadcaster::loop() {
     }
 
     this->get_clock()->sleep_until(
-      startTime + rclcpp::Duration::from_nanoseconds(1e9 / 30));
+        startTime + rclcpp::Duration::from_nanoseconds(1e9 / 30));
   }
 }
 
