@@ -16,18 +16,17 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster()
   this->declare_parameter<std::string>("odom_frame", "odom");
   this->get_parameter("odom_frame", odom_frame_);
   got_support_foot_ = false;
-  walking_support_foot_subscriber_ =
-      this->create_subscription<bitbots_msgs::msg::SupportState>("walk_support_state",
-                                                                 1,
-                                                                 std::bind(&BaseFootprintBroadcaster::supportFootCallback,
-                                                                           this,
-                                                                           _1));
-  dynamic_kick_support_foot_subscriber_ =
-      this->create_subscription<bitbots_msgs::msg::SupportState>("dynamic_kick_support_state",
-                                                                 1,
-                                                                 std::bind(&BaseFootprintBroadcaster::supportFootCallback,
-                                                                           this,
-                                                                           _1));
+
+  this->declare_parameter<std::vector<std::string>>("support_state_topics", {"walk_support_state"});
+  std::vector<std::string> support_state_topics;
+  this->get_parameter("support_state_topics", support_state_topics);
+  for (auto topic: support_state_topics) {
+    this->create_subscription<bitbots_msgs::msg::SupportState>(topic,
+                                                               1,
+                                                               std::bind(&BaseFootprintBroadcaster::supportFootCallback,
+                                                                         this,
+                                                                         _1));
+  }
 }
 
 void BaseFootprintBroadcaster::loop() {
