@@ -1,6 +1,18 @@
 # humanoid_base_footprint
 This ROS2 package includes a node which provides the base footprint frame for any humanoid robot following [REP - 120](https://www.ros.org/reps/rep-0120.html).
 
+## Installation
+
+Only source installation is available currently. Run the following in your ROS workspace:
+
+```
+git clone https://github.com/ros-sports/humanoid_base_footprint.git src/humanoid_base_footprint
+vcs import src < src/humanoid_base_footprint/dependencies.repos --recursive
+colcon build
+```
+
+## Description
+
 Definition of the base footprint frame (from [here](https://www.ros.org/reps/rep-0120.html)):
 
 >The base_footprint is the representation of the robot position on the floor. The floor is usually the level where the supporting leg rests, i.e. z = min(l_sole_z, r_sole_z) where l_sole_z and r_sole_z are the left and right sole height respecitvely. The translation component of the frame should be the barycenter of the feet projections on the floor. With respect to the odom frame, the roll and pitch angles should be zero and the yaw angle should correspond to the base_link yaw angle.
