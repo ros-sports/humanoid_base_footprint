@@ -3,3 +3,7 @@ repositories:
     type: git
     url: https://github.com/ros-sports/biped_interfaces.git
     version: rolling
+  rot_conv_lib:
+    type: git
+    url: https://github.com/bit-bots/rot_conv_lib.git
+    version: ros2
