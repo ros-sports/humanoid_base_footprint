@@ -1,7 +1,7 @@
-<?xml version="1.0"?>
+<?xml version='1.0' encoding='utf-8'?>
 <package format="2">
   <name>humanoid_base_footprint</name>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
 
   <description>Publishes a transform to the base footprint of the robot, based on the orientation and position of the feet.</description>
 
@@ -12,7 +12,7 @@
 
   <license>MIT</license>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rospy</depend>
   <depend>roscpp</depend>
@@ -23,17 +23,12 @@
   <depend>tf2_eigen</depend>
   <depend>rotconv</depend>
   <depend>tf2_geometry_msgs</depend>
-  <depend>tf_conversions</depend>
   <depend>geometry_msgs</depend>
   <depend>message_generation</depend>
-  <depend>bitbots_docs</depend>
-  <depend>bitbots_msgs</depend>
+  <depend>biped_interfaces</depend>
 
   <export>
-    <bitbots_documentation>
-      <language>python2</language>
-      <status>tested_integration</status>
-    </bitbots_documentation>
-    <rosdoc config="rosdoc.yaml"/>
+    <rosdoc config="rosdoc.yaml" />
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

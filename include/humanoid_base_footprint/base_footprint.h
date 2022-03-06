@@ -12,26 +12,30 @@ With respect to the odom frame, the roll and pitch angles should be zero and the
 Rationale: base_footprint provides a fairly stable 2D planar representation of the humanoid even while walking and swaying with the base_link.
 */
 
-#include <ros/ros.h>
-#include <std_msgs/Char.h>
-#include <tf2_eigen/tf2_eigen.h>
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/char.hpp>
+#include <tf2_eigen/tf2_eigen.hpp>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <rot_conv/rot_conv.h>
 #include <tf2/utils.h>
 #include <Eigen/Geometry>
-#include <bitbots_msgs/SupportState.h>
+#include <biped_interfaces/msg/phase.hpp>
+#include <unistd.h>
+using std::placeholders::_1;
 
-
-class BaseFootprintBroadcaster
-{
-public:
-    BaseFootprintBroadcaster();
-private:
-    geometry_msgs::TransformStamped tf;
-    tf2_ros::Buffer tfBuffer;
-    tf2_ros::TransformListener tfListener;
-    bool is_left_support, got_support_foot;
-    void supportFootCallback(const bitbots_msgs::SupportState msg);
+class BaseFootprintBroadcaster : public rclcpp::Node {
+ public:
+  BaseFootprintBroadcaster();
+  void loop();
+ private:
+  geometry_msgs::msg::TransformStamped tf_;
+  std::unique_ptr<tf2_ros::Buffer> tfBuffer_;
+  std::shared_ptr<tf2_ros::TransformListener> tfListener_;
+  bool is_left_support_, got_support_foot_;
+  std::string base_link_frame_, base_footprint_frame_, r_sole_frame_, l_sole_frame_, odom_frame_;
+  void supportFootCallback(const biped_interfaces::msg::Phase msg);
+  rclcpp::Subscription<biped_interfaces::msg::Phase>::SharedPtr walking_support_foot_subscriber_;
+  rclcpp::Subscription<biped_interfaces::msg::Phase>::SharedPtr dynamic_kick_support_foot_subscriber_;
 };
