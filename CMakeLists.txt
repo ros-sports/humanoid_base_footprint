@@ -52,6 +52,12 @@ add_executable(base_footprint src/base_footprint.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(base_footprint ${LIBS} ${Eigen3_LIBRARIES})
 
+## Run tests
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
 ament_export_dependencies(tf2_geometry_msgs)
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(std_msgs)

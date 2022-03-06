@@ -27,6 +27,9 @@
   <depend>message_generation</depend>
   <depend>biped_interfaces</depend>
 
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
   <export>
     <rosdoc config="rosdoc.yaml" />
     <build_type>ament_cmake</build_type>
