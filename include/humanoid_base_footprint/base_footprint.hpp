@@ -15,20 +15,14 @@
 #ifndef HUMANOID_BASE_FOOTPRINT__BASE_FOOTPRINT_HPP_
 #define HUMANOID_BASE_FOOTPRINT__BASE_FOOTPRINT_HPP_
 
-#include <Eigen/Geometry>
-#include <unistd.h>
-#include <tf2_ros/transform_broadcaster.h>
+#include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
-#include <tf2/utils.h>
-#include <rot_conv/rot_conv.h>
+#include <tf2_ros/transform_broadcaster.h>
 #include <memory>
 #include <string>
-#include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/char.hpp>
-#include <tf2_eigen/tf2_eigen.hpp>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <biped_interfaces/msg/phase.hpp>
-using std::placeholders::_1;
+#include <rclcpp/node.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 
 // taken from REP120
 //
@@ -46,10 +40,14 @@ using std::placeholders::_1;
 // Rationale: base_footprint provides a fairly stable 2D planar representation of the humanoid even
 // while walking and swaying with the base_link.
 
+namespace humanoid_base_footprint
+{
+
 class BaseFootprintBroadcaster : public rclcpp::Node
 {
 public:
-  BaseFootprintBroadcaster();
+  explicit BaseFootprintBroadcaster(const rclcpp::NodeOptions & options = rclcpp::NodeOptions{});
+
   void loop();
 
 private:
@@ -63,5 +61,7 @@ private:
   rclcpp::Subscription<biped_interfaces::msg::Phase>::SharedPtr
     dynamic_kick_support_foot_subscriber_;
 };
+
+}  // namespace humanoid_base_footprint
 
 #endif  // HUMANOID_BASE_FOOTPRINT__BASE_FOOTPRINT_HPP_

@@ -14,24 +14,17 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>rospy</depend>
-  <depend>roscpp</depend>
-  <depend>rosconsole</depend>
-  <depend>std_msgs</depend>
-  <depend>sensor_msgs</depend>
-  <depend>tf2</depend>
-  <depend>tf2_eigen</depend>
-  <depend>rotconv</depend>
   <depend>tf2_geometry_msgs</depend>
-  <depend>geometry_msgs</depend>
-  <depend>message_generation</depend>
+  <depend>tf2_ros</depend>
+  <depend>rclcpp_components</depend>
+  <depend>eigen</depend>
+  <depend>rotconv</depend>
   <depend>biped_interfaces</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
   <export>
-    <rosdoc config="rosdoc.yaml" />
     <build_type>ament_cmake</build_type>
   </export>
 </package>

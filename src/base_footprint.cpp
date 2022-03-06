@@ -12,9 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <rot_conv/rot_conv.h>
+#include <Eigen/Geometry>
+#include <functional>
 #include <humanoid_base_footprint/base_footprint.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <tf2_eigen/tf2_eigen.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
-BaseFootprintBroadcaster::BaseFootprintBroadcaster()
+// This has to be included after #include <tf2_geometry_msgs/tf2_geometyr_msgs.hpp>, due to reasons
+// explained in https://github.com/ros2/geometry2/pull/485
+// "tf2/utils.h" is used instead of <tf2/utils.h> to prevent ament_cpplint from complaining about
+// including a C system header after C++ system headers.
+#include "tf2/utils.h"
+
+using std::placeholders::_1;
+
+namespace humanoid_base_footprint
+{
+
+BaseFootprintBroadcaster::BaseFootprintBroadcaster(const rclcpp::NodeOptions &)
 : Node("base_footprint"),
   tfBuffer_(std::make_unique<tf2_ros::Buffer>(this->get_clock())),
   tfListener_(std::make_shared<tf2_ros::TransformListener>(*tfBuffer_))
@@ -188,13 +205,7 @@ void BaseFootprintBroadcaster::supportFootCallback(const biped_interfaces::msg::
   is_left_support_ = (msg.phase == biped_interfaces::msg::Phase::LEFT_STANCE);
 }
 
-int main(int argc, char ** argv)
-{
-  rclcpp::init(argc, argv);
-  auto node = std::make_shared<BaseFootprintBroadcaster>();
-  // wait till connection with publishers has been established
-  // so we do not immediately blast something into the log output
-  rclcpp::sleep_for(std::chrono::milliseconds(500));
-  node->loop();
-  rclcpp::shutdown();
-}
+}  // namespace humanoid_base_footprint
+
+#include "rclcpp_components/register_node_macro.hpp"
+RCLCPP_COMPONENTS_REGISTER_NODE(humanoid_base_footprint::BaseFootprintBroadcaster)
