@@ -1,10 +1,25 @@
-#include <humanoid_base_footprint/base_footprint.h>
+// Copyright 2022 Hamburg Bit-Bots
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include <humanoid_base_footprint/base_footprint.hpp>
 
 BaseFootprintBroadcaster::BaseFootprintBroadcaster()
-    : Node("base_footprint"),
-      tfBuffer_(std::make_unique<tf2_ros::Buffer>(this->get_clock())),
-      tfListener_(std::make_shared<tf2_ros::TransformListener>(*tfBuffer_)) {
-  //setup tf listener and broadcaster as class members
+: Node("base_footprint"),
+  tfBuffer_(std::make_unique<tf2_ros::Buffer>(this->get_clock())),
+  tfListener_(std::make_shared<tf2_ros::TransformListener>(*tfBuffer_))
+{
+  // setup tf listener and broadcaster as class members
   this->declare_parameter<std::string>("base_link_frame", "base_link");
   this->get_parameter("base_link_frame", base_link_frame_);
   this->declare_parameter<std::string>("base_footprint_frame", "base_footprint");
@@ -20,19 +35,23 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster()
   this->declare_parameter<std::vector<std::string>>("support_state_topics", {"walk_support_state"});
   std::vector<std::string> support_state_topics;
   this->get_parameter("support_state_topics", support_state_topics);
-  for (auto topic: support_state_topics) {
-    this->create_subscription<biped_interfaces::msg::Phase>(topic,
-                                                               1,
-                                                               std::bind(&BaseFootprintBroadcaster::supportFootCallback,
-                                                                         this,
-                                                                         _1));
+  for (auto topic : support_state_topics) {
+    this->create_subscription<biped_interfaces::msg::Phase>(
+      topic,
+      1,
+      std::bind(
+        &BaseFootprintBroadcaster::supportFootCallback,
+        this,
+        _1));
   }
 }
 
-void BaseFootprintBroadcaster::loop() {
+void BaseFootprintBroadcaster::loop()
+{
   tf_ = geometry_msgs::msg::TransformStamped();
 
-  static std::unique_ptr<tf2_ros::TransformBroadcaster> br = std::make_unique<tf2_ros::TransformBroadcaster>(this);
+  static std::unique_ptr<tf2_ros::TransformBroadcaster> br =
+    std::make_unique<tf2_ros::TransformBroadcaster>(this);
   auto node_pointer = this->shared_from_this();
 
   rclcpp::Time last_published_time;
@@ -40,26 +59,30 @@ void BaseFootprintBroadcaster::loop() {
     rclcpp::Time startTime = this->get_clock()->now();
     rclcpp::spin_some(node_pointer);
     geometry_msgs::msg::TransformStamped tf_right,
-        tf_left,
-        odom,
-        support_foot,
-        non_support_foot,
-        non_support_foot_in_support_foot_frame,
-        base_footprint_in_support_foot_frame;
+      tf_left,
+      odom,
+      support_foot,
+      non_support_foot,
+      non_support_foot_in_support_foot_frame,
+      base_footprint_in_support_foot_frame;
 
     try {
       tf_right = tfBuffer_
-          ->lookupTransform(base_link_frame_,
-                            r_sole_frame_,
-                            this->now(),
-                            rclcpp::Duration::from_nanoseconds(1e9 * 0.1));
+        ->lookupTransform(
+        base_link_frame_,
+        r_sole_frame_,
+        this->now(),
+        rclcpp::Duration::from_nanoseconds(1e9 * 0.1));
       tf_left = tfBuffer_
-          ->lookupTransform(base_link_frame_,
-                            l_sole_frame_,
-                            this->now(),
-                            rclcpp::Duration::from_nanoseconds(1e9 * 0.1));
+        ->lookupTransform(
+        base_link_frame_,
+        l_sole_frame_,
+        this->now(),
+        rclcpp::Duration::from_nanoseconds(1e9 * 0.1));
       odom = tfBuffer_
-          ->lookupTransform(base_link_frame_, odom_frame_, this->now(), rclcpp::Duration::from_nanoseconds(1e9 * 0.1));
+        ->lookupTransform(
+        base_link_frame_, odom_frame_,
+        this->now(), rclcpp::Duration::from_nanoseconds(1e9 * 0.1));
 
       if (got_support_foot_) {
         if (is_left_support_) {
@@ -79,25 +102,30 @@ void BaseFootprintBroadcaster::loop() {
           non_support_foot = tf_right;
         }
       }
-      // get the position of the non-support foot in the support frame, used for computing the barycenter
-      non_support_foot_in_support_foot_frame = tfBuffer_->lookupTransform(support_foot.child_frame_id,
-                                                                          non_support_foot.child_frame_id,
-                                                                          support_foot.header.stamp,
-                                                                          rclcpp::Duration::from_nanoseconds(
-                                                                              1e9 * 0.1));
+      // get the position of the non-support foot in the support frame, used for computing the
+      // barycenter
+      non_support_foot_in_support_foot_frame = tfBuffer_->lookupTransform(
+        support_foot.child_frame_id,
+        non_support_foot.child_frame_id,
+        support_foot.header.stamp,
+        rclcpp::Duration::from_nanoseconds(
+          1e9 * 0.1));
 
       geometry_msgs::msg::TransformStamped
-          support_to_base_link = tfBuffer_->lookupTransform(support_foot.header.frame_id,
-                                                            support_foot.child_frame_id,
-                                                            support_foot.header.stamp);
+        support_to_base_link = tfBuffer_->lookupTransform(
+        support_foot.header.frame_id,
+        support_foot.child_frame_id,
+        support_foot.header.stamp);
 
       geometry_msgs::msg::PoseStamped base_footprint, base_footprint_in_base_link;
 
       // z at ground leven (support foot height)
       base_footprint.pose.position.z = 0;
       // x and y at barycenter of feet projections on the ground
-      base_footprint.pose.position.x = non_support_foot_in_support_foot_frame.transform.translation.x / 2;
-      base_footprint.pose.position.y = non_support_foot_in_support_foot_frame.transform.translation.y / 2;
+      base_footprint.pose.position.x =
+        non_support_foot_in_support_foot_frame.transform.translation.x / 2;
+      base_footprint.pose.position.y =
+        non_support_foot_in_support_foot_frame.transform.translation.y / 2;
 
 
       // get yaw from base link
@@ -106,8 +134,9 @@ void BaseFootprintBroadcaster::loop() {
 
       // Convert tf to eigen quaternion
       Eigen::Quaterniond eigen_quat
-          (odom.transform.rotation.w, odom.transform.rotation.x, odom.transform.rotation.y, odom.transform.rotation.z);
-      //can't use this out of some reasons tf2::convert(odom.transform.rotation, eigen_quat);
+        (odom.transform.rotation.w, odom.transform.rotation.x, odom.transform.rotation.y,
+        odom.transform.rotation.z);
+      // can't use this out of some reasons tf2::convert(odom.transform.rotation, eigen_quat);
 
       // Remove yaw from quaternion
       Eigen::Quaterniond eigen_quat_out;
@@ -141,23 +170,26 @@ void BaseFootprintBroadcaster::loop() {
         br->sendTransform(tf_);
         last_published_time = tf_.header.stamp;
       }
-
     } catch (...) {
-      //RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 2, "Can not->publish base_footprint, check your tf tree");
+      // RCLCPP_WARN_THROTTLE(
+      //   this->get_logger(), *this->get_clock(), 2,
+      //   "Can not->publish base_footprint, check your tf tree");
       continue;
     }
 
     this->get_clock()->sleep_until(
-        startTime + rclcpp::Duration::from_nanoseconds(1e9 / 30));
+      startTime + rclcpp::Duration::from_nanoseconds(1e9 / 30));
   }
 }
 
-void BaseFootprintBroadcaster::supportFootCallback(const biped_interfaces::msg::Phase msg) {
+void BaseFootprintBroadcaster::supportFootCallback(const biped_interfaces::msg::Phase msg)
+{
   got_support_foot_ = true;
   is_left_support_ = (msg.phase == biped_interfaces::msg::Phase::LEFT_STANCE);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char ** argv)
+{
   rclcpp::init(argc, argv);
   auto node = std::make_shared<BaseFootprintBroadcaster>();
   // wait till connection with publishers has been established
@@ -166,4 +198,3 @@ int main(int argc, char **argv) {
   node->loop();
   rclcpp::shutdown();
 }
-
