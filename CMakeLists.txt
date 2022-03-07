@@ -1,44 +1,69 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(humanoid_base_footprint)
-add_compile_options(-Wall -Werror -Wno-unused)
 
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rosconsole
-  std_msgs
-  sensor_msgs
-  tf2
-  tf2_eigen
-  tf2_geometry_msgs
-  tf_conversions
-  message_generation
-  geometry_msgs
-  rospy
-  bitbots_docs
-  bitbots_msgs
-  rotconv
-  bitbots_msgs
-)
+# Add support for C++17
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
 
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# Find dependencies
+find_package(biped_interfaces REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
+find_package(rotconv REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
 
-enable_bitbots_docs()
+set(THIS_PACKAGE_INCLUDE_DEPENDS
+  biped_interfaces
+  Eigen3
+  rclcpp
+  rclcpp_components
+  rotconv
+  tf2_geometry_msgs
+  tf2_ros)
 
-catkin_package(
-   CATKIN_DEPENDS tf2 rotconv
-)
+# Build
+add_library(base_footprint_node SHARED
+  src/base_footprint.cpp)
 
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-  ${Eigen3_INCLUDE_DIRS}
-)
+target_include_directories(base_footprint_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 
-## Declare a C++ executable
-add_executable(base_footprint src/base_footprint.cpp)
+rclcpp_components_register_node(base_footprint_node
+  PLUGIN "humanoid_base_footprint::BaseFootprintBroadcaster"
+  EXECUTABLE base_footprint)
 
-## Specify libraries to link a library or executable target against
-target_link_libraries(base_footprint
-    ${catkin_LIBRARIES}
-    ${Eigen3_LIBRARIES}
-)
+ament_target_dependencies(base_footprint_node ${THIS_PACKAGE_INCLUDE_DEPENDS})
+
+ament_export_targets(export_base_footprint HAS_LIBRARY_TARGET)
+ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
+
+# Install
+install(
+  DIRECTORY include/
+  DESTINATION include)
+install(
+  TARGETS base_footprint_node
+  EXPORT export_base_footprint
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include)
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME})
+
+## Run tests
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+# Package
+ament_package()

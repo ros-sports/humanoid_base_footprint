@@ -5,7 +5,6 @@ check-presence-script: '#!/bin/bash
   test -d $BITBOTS_CATKIN_WORKSPACE/src/humanoid_base_footprint'
 depends:
 - bitbots_docs
-- bitbots_msgs
 - geometry_msgs
 - message_generation
 - rosconsole
