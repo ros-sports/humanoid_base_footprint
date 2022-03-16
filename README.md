@@ -11,6 +11,14 @@ vcs import src < src/humanoid_base_footprint/dependencies.repos --recursive
 colcon build
 ```
 
+## Usage
+
+To run the node:
+
+```
+ros2 run humanoid_base_footprint base_footprint
+```
+
 ## Description
 
 Definition of the base footprint frame (from [here](https://www.ros.org/reps/rep-0120.html)):
