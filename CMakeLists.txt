@@ -18,6 +18,7 @@ find_package(rclcpp_components REQUIRED)
 find_package(rotconv REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_eigen REQUIRED)
 
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   biped_interfaces
@@ -26,7 +27,8 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp_components
   rotconv
   tf2_geometry_msgs
-  tf2_ros)
+  tf2_ros
+  tf2_eigen)
 
 # Build
 add_library(base_footprint_node SHARED
