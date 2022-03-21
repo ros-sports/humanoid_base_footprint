@@ -47,6 +47,7 @@ class BaseFootprintBroadcaster : public rclcpp::Node
 {
 public:
   explicit BaseFootprintBroadcaster(const rclcpp::NodeOptions & options = rclcpp::NodeOptions{});
+  ~BaseFootprintBroadcaster();
 
   void loop();
 
@@ -60,6 +61,10 @@ private:
   rclcpp::Subscription<biped_interfaces::msg::Phase>::SharedPtr walking_support_foot_subscriber_;
   rclcpp::Subscription<biped_interfaces::msg::Phase>::SharedPtr
     dynamic_kick_support_foot_subscriber_;
+  std::unique_ptr<tf2_ros::TransformBroadcaster> tfBroadcaster_;
+
+  std::thread loop_thread_;
+  rclcpp::Time last_published_time;
 };
 
 }  // namespace humanoid_base_footprint

@@ -34,7 +34,8 @@ namespace humanoid_base_footprint
 BaseFootprintBroadcaster::BaseFootprintBroadcaster(const rclcpp::NodeOptions &)
 : Node("base_footprint"),
   tfBuffer_(std::make_unique<tf2_ros::Buffer>(this->get_clock())),
-  tfListener_(std::make_shared<tf2_ros::TransformListener>(*tfBuffer_))
+  tfListener_(std::make_shared<tf2_ros::TransformListener>(*tfBuffer_)),
+  tfBroadcaster_(std::make_unique<tf2_ros::TransformBroadcaster>(this))
 {
   // setup tf listener and broadcaster as class members
   this->declare_parameter<std::string>("base_link_frame", "base_link");
@@ -61,20 +62,25 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster(const rclcpp::NodeOptions &)
         this,
         _1));
   }
+
+  // Start receive loop
+  loop_thread_ = std::thread(
+    [this]() {
+      loop();
+    });
+}
+
+BaseFootprintBroadcaster::~BaseFootprintBroadcaster()
+{
+  if (loop_thread_.joinable()) {
+    loop_thread_.join();
+  }
 }
 
 void BaseFootprintBroadcaster::loop()
 {
-  tf_ = geometry_msgs::msg::TransformStamped();
-
-  static std::unique_ptr<tf2_ros::TransformBroadcaster> br =
-    std::make_unique<tf2_ros::TransformBroadcaster>(this);
-  auto node_pointer = this->shared_from_this();
-
-  rclcpp::Time last_published_time;
   while (rclcpp::ok()) {
     rclcpp::Time startTime = this->get_clock()->now();
-    rclcpp::spin_some(node_pointer);
     geometry_msgs::msg::TransformStamped tf_right,
       tf_left,
       odom,
@@ -184,7 +190,7 @@ void BaseFootprintBroadcaster::loop()
       tf_.transform.translation.z = base_footprint_in_base_link.pose.position.z;
       tf_.transform.rotation = base_footprint.pose.orientation;
       if (tf_.header.stamp != last_published_time) {
-        br->sendTransform(tf_);
+        tfBroadcaster_->sendTransform(tf_);
         last_published_time = tf_.header.stamp;
       }
     } catch (...) {
