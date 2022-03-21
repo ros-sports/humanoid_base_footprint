@@ -1,6 +1,8 @@
 # humanoid_base_footprint
 This ROS2 package includes a node which provides the base footprint frame for any humanoid robot following [REP - 120](https://www.ros.org/reps/rep-0120.html).
 
+Only **ROS2 Rolling** is supported currently.
+
 ## Installation
 
 Only source installation is available currently. Run the following in your ROS workspace:
