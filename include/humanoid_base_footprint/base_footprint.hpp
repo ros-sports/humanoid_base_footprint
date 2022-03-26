@@ -60,6 +60,10 @@ private:
   rclcpp::Subscription<biped_interfaces::msg::Phase>::SharedPtr walking_support_foot_subscriber_;
   rclcpp::Subscription<biped_interfaces::msg::Phase>::SharedPtr
     dynamic_kick_support_foot_subscriber_;
+
+  std::unique_ptr<tf2_ros::TransformBroadcaster> tfBroadcaster_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  void timerCallback();
 };
 
 }  // namespace humanoid_base_footprint
