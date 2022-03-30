@@ -32,7 +32,7 @@ protected:
   }
 };
 
-TEST_F(TestBaseFootprint, TestPublishing)
+TEST_F(TestBaseFootprint, timestamp_matching)
 {
   auto footprint_node = std::make_shared<humanoid_base_footprint::BaseFootprintBroadcaster>();
   auto node = std::make_shared<rclcpp::Node>("test_node");
@@ -61,7 +61,7 @@ TEST_F(TestBaseFootprint, TestPublishing)
   tf2_ros::Buffer tfBuffer{node->get_clock()};
   tf2_ros::TransformListener tfListener{tfBuffer};
 
-  rclcpp::sleep_for(std::chrono::milliseconds(100));  // Wait for timer callback to be called
+  rclcpp::sleep_for(std::chrono::milliseconds(50));  // Wait for timer callback to be called
   rclcpp::spin_some(footprint_node);
   rclcpp::sleep_for(std::chrono::milliseconds(5));  // Wait for transforms to arrive into buffer
 
@@ -72,7 +72,7 @@ TEST_F(TestBaseFootprint, TestPublishing)
   });
 }
 
-TEST_F(TestBaseFootprint, TestPublishing2)
+TEST_F(TestBaseFootprint, timestamp_non_matching)
 {
   auto footprint_node = std::make_shared<humanoid_base_footprint::BaseFootprintBroadcaster>();
   auto node = std::make_shared<rclcpp::Node>("test_node");
@@ -83,50 +83,31 @@ TEST_F(TestBaseFootprint, TestPublishing2)
 
   geometry_msgs::msg::TransformStamped tf;
 
-  tf.header.stamp = rclcpp::Time(1000000000, 000000001);
   tf.header.frame_id = "odom";
   tf.child_frame_id = "base_link";
+  tf.header.stamp = rclcpp::Time(1000000000, 000000001);
+  br.sendTransform(tf);
+  tf.header.stamp = rclcpp::Time(1000000001, 000000001);
   br.sendTransform(tf);
 
-  tf.header.stamp = rclcpp::Time(1000000000, 000000001);
   tf.header.frame_id = "base_link";
   tf.child_frame_id = "l_sole";
+  tf.header.stamp = rclcpp::Time(1000000000, 000000001);
+  br.sendTransform(tf);
+  tf.header.stamp = rclcpp::Time(1000000002, 000000001);
   br.sendTransform(tf);
 
-  tf.header.stamp = rclcpp::Time(1000000000, 000000001);
   tf.header.frame_id = "base_link";
   tf.child_frame_id = "r_sole";
+  tf.header.stamp = rclcpp::Time(1000000000, 000000001);
+  br.sendTransform(tf);
+  tf.header.stamp = rclcpp::Time(1000000003, 000000001);
   br.sendTransform(tf);
 
   tf2_ros::Buffer tfBuffer{node->get_clock()};
   tf2_ros::TransformListener tfListener{tfBuffer};
 
-  rclcpp::sleep_for(std::chrono::milliseconds(100));  // Wait for timer callback to be called
-  rclcpp::spin_some(footprint_node);
-  rclcpp::sleep_for(std::chrono::milliseconds(5));  // Wait for transforms to arrive into buffer
-
-  ASSERT_NO_THROW(
-  {
-    auto tf = tfBuffer.lookupTransform("base_link", "base_footprint", tf2::TimePointZero);
-    EXPECT_EQ(tf.header.stamp, rclcpp::Time(1000000000, 000000001));
-  });
-
-  tf.header.stamp = rclcpp::Time(1000000001, 000000001);
-  tf.header.frame_id = "odom";
-  tf.child_frame_id = "base_link";
-  br.sendTransform(tf);
-
-  tf.header.stamp = rclcpp::Time(1000000002, 000000001);
-  tf.header.frame_id = "base_link";
-  tf.child_frame_id = "l_sole";
-  br.sendTransform(tf);
-
-  tf.header.stamp = rclcpp::Time(1000000003, 000000001);
-  tf.header.frame_id = "base_link";
-  tf.child_frame_id = "r_sole";
-  br.sendTransform(tf);
-
-  rclcpp::sleep_for(std::chrono::milliseconds(100));  // Wait for timer callback to be called
+  rclcpp::sleep_for(std::chrono::milliseconds(50));  // Wait for timer callback to be called
   rclcpp::spin_some(footprint_node);
   rclcpp::sleep_for(std::chrono::milliseconds(5));  // Wait for transforms to arrive into buffer
 
@@ -135,4 +116,48 @@ TEST_F(TestBaseFootprint, TestPublishing2)
     auto tf = tfBuffer.lookupTransform("base_link", "base_footprint", tf2::TimePointZero);
     EXPECT_EQ(tf.header.stamp, rclcpp::Time(1000000001, 000000001));
   });
+}
+
+TEST_F(TestBaseFootprint, no_overlapping_time)
+{
+auto footprint_node = std::make_shared<humanoid_base_footprint::BaseFootprintBroadcaster>();
+  auto node = std::make_shared<rclcpp::Node>("test_node");
+
+  tf2_ros::TransformBroadcaster br(node);
+
+  builtin_interfaces::msg::Time stamp(rclcpp::Time(1000000000, 000000001));
+
+  geometry_msgs::msg::TransformStamped tf;
+
+  tf.header.frame_id = "odom";
+  tf.child_frame_id = "base_link";
+  tf.header.stamp = rclcpp::Time(1000000000, 000000001);
+  br.sendTransform(tf);
+  tf.header.stamp = rclcpp::Time(1000000001, 000000001);
+  br.sendTransform(tf);
+
+  tf.header.frame_id = "base_link";
+  tf.child_frame_id = "l_sole";
+  tf.header.stamp = rclcpp::Time(1000000002, 000000001);
+  br.sendTransform(tf);
+  tf.header.stamp = rclcpp::Time(1000000003, 000000001);
+  br.sendTransform(tf);
+
+  tf.header.frame_id = "base_link";
+  tf.child_frame_id = "r_sole";
+  tf.header.stamp = rclcpp::Time(1000000004, 000000001);
+  br.sendTransform(tf);
+  tf.header.stamp = rclcpp::Time(1000000005, 000000001);
+  br.sendTransform(tf);
+
+  tf2_ros::Buffer tfBuffer{node->get_clock()};
+  tf2_ros::TransformListener tfListener{tfBuffer};
+
+  rclcpp::sleep_for(std::chrono::milliseconds(50));  // Wait for timer callback to be called
+  rclcpp::spin_some(footprint_node);
+  rclcpp::sleep_for(std::chrono::milliseconds(5));  // Wait for transforms to arrive into buffer
+
+  ASSERT_THROW({
+    tfBuffer.lookupTransform("base_link", "base_footprint", tf2::TimePointZero);
+  }, tf2::TransformException);
 }

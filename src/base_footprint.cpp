@@ -38,16 +38,13 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster(const rclcpp::NodeOptions &)
   tfListener_(std::make_shared<tf2_ros::TransformListener>(*tfBuffer_))
 {
   // setup tf listener and broadcaster as class members
-  this->declare_parameter<std::string>("base_link_frame", "base_link");
-  this->get_parameter("base_link_frame", base_link_frame_);
-  this->declare_parameter<std::string>("base_footprint_frame", "base_footprint");
-  this->get_parameter("base_footprint_frame", base_footprint_frame_);
-  this->declare_parameter<std::string>("r_sole_frame", "r_sole");
-  this->get_parameter("r_sole_frame", r_sole_frame_);
-  this->declare_parameter<std::string>("l_sole_frame", "l_sole");
-  this->get_parameter("l_sole_frame", l_sole_frame_);
-  this->declare_parameter<std::string>("odom_frame", "odom");
-  this->get_parameter("odom_frame", odom_frame_);
+  base_link_frame_ = this->declare_parameter<std::string>("base_link_frame", "base_link");
+  base_footprint_frame_ = this->declare_parameter<std::string>(
+    "base_footprint_frame", "base_footprint");
+  r_sole_frame_ = this->declare_parameter<std::string>("r_sole_frame", "r_sole");
+  l_sole_frame_ = this->declare_parameter<std::string>("l_sole_frame", "l_sole");
+  odom_frame_ = this->declare_parameter<std::string>("odom_frame", "odom");
+
   got_support_foot_ = false;
 
   this->declare_parameter<std::vector<std::string>>("support_state_topics", {"walk_support_state"});
@@ -65,25 +62,23 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster(const rclcpp::NodeOptions &)
 
   tfBroadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(this);
 
-  timer_ = this->create_wall_timer(33ms, std::bind(&BaseFootprintBroadcaster::timerCallback, this));
+  double publish_frequency = this->declare_parameter<double>("publish_frequency", 30.0);
+  std::chrono::milliseconds publish_interval_ms =
+    std::chrono::milliseconds(static_cast<uint64_t>(1000.0 / publish_frequency));
+  timer_ = rclcpp::create_timer(
+    this, get_clock(), rclcpp::Duration(publish_interval_ms),
+    std::bind(&BaseFootprintBroadcaster::timerCallback, this));
 }
 
 void BaseFootprintBroadcaster::timerCallback()
 {
-  std::cout << "timerCallback" << std::endl;
-  
-  geometry_msgs::msg::TransformStamped tf_right,
-    tf_left,
-    odom,
-    support_foot,
-    non_support_foot,
-    non_support_foot_in_support_foot_frame,
-    base_footprint_in_support_foot_frame;
-
   try {
-    tf_right = tfBuffer_->lookupTransform(base_link_frame_, r_sole_frame_, tf2::TimePointZero);
-    tf_left = tfBuffer_->lookupTransform(base_link_frame_, l_sole_frame_, tf2::TimePointZero);
-    odom = tfBuffer_->lookupTransform(base_link_frame_, odom_frame_, tf2::TimePointZero);
+    geometry_msgs::msg::TransformStamped tf_right =
+      tfBuffer_->lookupTransform(base_link_frame_, r_sole_frame_, tf2::TimePointZero);
+    geometry_msgs::msg::TransformStamped tf_left =
+      tfBuffer_->lookupTransform(base_link_frame_, l_sole_frame_, tf2::TimePointZero);
+    geometry_msgs::msg::TransformStamped odom =
+      tfBuffer_->lookupTransform(base_link_frame_, odom_frame_, tf2::TimePointZero);
 
     auto stamp = std::min(
       {
@@ -94,6 +89,8 @@ void BaseFootprintBroadcaster::timerCallback()
     tf_right = tfBuffer_->lookupTransform(base_link_frame_, r_sole_frame_, stamp);
     tf_left = tfBuffer_->lookupTransform(base_link_frame_, l_sole_frame_, stamp);
     odom = tfBuffer_->lookupTransform(base_link_frame_, odom_frame_, stamp);
+
+    geometry_msgs::msg::TransformStamped support_foot, non_support_foot;
 
     if (got_support_foot_) {
       if (is_left_support_) {
@@ -115,9 +112,9 @@ void BaseFootprintBroadcaster::timerCallback()
     }
     // get the position of the non-support foot in the support frame, used for computing the
     // barycenter
-    non_support_foot_in_support_foot_frame = tfBuffer_->lookupTransform(
-      support_foot.child_frame_id,
-      non_support_foot.child_frame_id,
+    geometry_msgs::msg::TransformStamped non_support_foot_in_support_foot_frame =
+      tfBuffer_->lookupTransform(
+      support_foot.child_frame_id, non_support_foot.child_frame_id,
       stamp);
 
     geometry_msgs::msg::TransformStamped
@@ -126,8 +123,7 @@ void BaseFootprintBroadcaster::timerCallback()
       support_foot.child_frame_id,
       stamp);
 
-    geometry_msgs::msg::PoseStamped base_footprint, base_footprint_in_base_link;
-
+    geometry_msgs::msg::PoseStamped base_footprint;
     // z at ground leven (support foot height)
     base_footprint.pose.position.z = 0;
     // x and y at barycenter of feet projections on the ground
@@ -165,6 +161,7 @@ void BaseFootprintBroadcaster::timerCallback()
     base_footprint.pose.orientation = tf2::toMsg(odom_rot * rotation.inverse());
 
     // transform the position and orientation of the base footprint into the base_link frame
+    geometry_msgs::msg::PoseStamped base_footprint_in_base_link;
     tf2::doTransform(base_footprint, base_footprint_in_base_link, support_to_base_link);
 
     // set the broadcasted transform to the position and orientation of the base footprint
@@ -177,8 +174,8 @@ void BaseFootprintBroadcaster::timerCallback()
     tf.transform.translation.z = base_footprint_in_base_link.pose.position.z;
     tf.transform.rotation = base_footprint.pose.orientation;
     tfBroadcaster_->sendTransform(tf);
-  } catch (const tf2::LookupException & ex) {
-    RCLCPP_WARN(this->get_logger(), ex.what());
+  } catch (const tf2::TransformException & ex) {
+    // RCLCPP_WARN(this->get_logger(), ex.what());
   }
 }
 
