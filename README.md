@@ -1,4 +1,7 @@
 # humanoid_base_footprint
+
+[![Build and Test (rolling)](../../actions/workflows/build_and_test_rolling.yaml/badge.svg)](../../actions/workflows/build_and_test_rolling.yaml)
+
 This ROS2 package includes a node which provides the base footprint frame for any humanoid robot following [REP - 120](https://www.ros.org/reps/rep-0120.html).
 
 Only **ROS2 Rolling** is supported currently.
