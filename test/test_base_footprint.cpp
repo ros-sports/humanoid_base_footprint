@@ -120,7 +120,7 @@ TEST_F(TestBaseFootprint, timestamp_non_matching)
 
 TEST_F(TestBaseFootprint, no_overlapping_time)
 {
-auto footprint_node = std::make_shared<humanoid_base_footprint::BaseFootprintBroadcaster>();
+  auto footprint_node = std::make_shared<humanoid_base_footprint::BaseFootprintBroadcaster>();
   auto node = std::make_shared<rclcpp::Node>("test_node");
 
   tf2_ros::TransformBroadcaster br(node);
@@ -157,7 +157,8 @@ auto footprint_node = std::make_shared<humanoid_base_footprint::BaseFootprintBro
   rclcpp::spin_some(footprint_node);
   rclcpp::sleep_for(std::chrono::milliseconds(5));  // Wait for transforms to arrive into buffer
 
-  ASSERT_THROW({
+  ASSERT_THROW(
+  {
     tfBuffer.lookupTransform("base_link", "base_footprint", tf2::TimePointZero);
   }, tf2::TransformException);
 }

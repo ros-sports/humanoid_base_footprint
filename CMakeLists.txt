@@ -16,6 +16,7 @@ find_package(Eigen3 REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rotconv REQUIRED)
+find_package(tf2_eigen REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 
@@ -25,6 +26,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp
   rclcpp_components
   rotconv
+  tf2_eigen
   tf2_geometry_msgs
   tf2_ros)
 
