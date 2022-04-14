@@ -15,7 +15,7 @@ find_package(biped_interfaces REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
-find_package(rotconv REQUIRED)
+find_package(rot_conv REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
@@ -25,7 +25,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   Eigen3
   rclcpp
   rclcpp_components
-  rotconv
+  rot_conv
   tf2_eigen
   tf2_geometry_msgs
   tf2_ros)
