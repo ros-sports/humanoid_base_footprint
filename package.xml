@@ -19,7 +19,7 @@
   <depend>tf2_ros</depend>
   <depend>rclcpp_components</depend>
   <depend>eigen</depend>
-  <depend>rotconv</depend>
+  <depend>rot_conv</depend>
   <depend>biped_interfaces</depend>
 
   <test_depend>ament_lint_auto</test_depend>
