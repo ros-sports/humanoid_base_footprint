@@ -35,7 +35,7 @@ namespace humanoid_base_footprint
 BaseFootprintBroadcaster::BaseFootprintBroadcaster(const rclcpp::NodeOptions &)
 : Node("base_footprint"),
   tfBuffer_(std::make_unique<tf2_ros::Buffer>(this->get_clock())),
-  tfListener_(std::make_shared<tf2_ros::TransformListener>(*tfBuffer_))
+  tfListener_(std::make_shared<tf2_ros::TransformListener>(*tfBuffer_, this))
 {
   // setup tf listener and broadcaster as class members
   base_link_frame_ = this->declare_parameter<std::string>("base_link_frame", "base_link");

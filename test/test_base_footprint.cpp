@@ -59,7 +59,7 @@ TEST_F(TestBaseFootprint, timestamp_matching)
   br.sendTransform(tf);
 
   tf2_ros::Buffer tfBuffer{node->get_clock()};
-  tf2_ros::TransformListener tfListener{tfBuffer};
+  tf2_ros::TransformListener tfListener{tfBuffer, node};
 
   rclcpp::sleep_for(std::chrono::milliseconds(50));  // Wait for timer callback to be called
   rclcpp::spin_some(footprint_node);
@@ -105,7 +105,7 @@ TEST_F(TestBaseFootprint, timestamp_non_matching)
   br.sendTransform(tf);
 
   tf2_ros::Buffer tfBuffer{node->get_clock()};
-  tf2_ros::TransformListener tfListener{tfBuffer};
+  tf2_ros::TransformListener tfListener{tfBuffer, node};
 
   rclcpp::sleep_for(std::chrono::milliseconds(50));  // Wait for timer callback to be called
   rclcpp::spin_some(footprint_node);
@@ -151,7 +151,7 @@ TEST_F(TestBaseFootprint, no_overlapping_time)
   br.sendTransform(tf);
 
   tf2_ros::Buffer tfBuffer{node->get_clock()};
-  tf2_ros::TransformListener tfListener{tfBuffer};
+  tf2_ros::TransformListener tfListener{tfBuffer, node};
 
   rclcpp::sleep_for(std::chrono::milliseconds(50));  // Wait for timer callback to be called
   rclcpp::spin_some(footprint_node);
