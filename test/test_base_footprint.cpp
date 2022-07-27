@@ -59,7 +59,7 @@ TEST_F(TestBaseFootprint, timestamp_matching)
   br.sendTransform(tf);
 
   tf2_ros::Buffer tfBuffer{node->get_clock()};
-  tf2_ros::TransformListener tfListener{tfBuffer};
+  tf2_ros::TransformListener tfListener{tfBuffer, node};
 
   rclcpp::sleep_for(std::chrono::milliseconds(50));  // Wait for timer callback to be called
   rclcpp::spin_some(footprint_node);
@@ -105,7 +105,7 @@ TEST_F(TestBaseFootprint, timestamp_non_matching)
   br.sendTransform(tf);
 
   tf2_ros::Buffer tfBuffer{node->get_clock()};
-  tf2_ros::TransformListener tfListener{tfBuffer};
+  tf2_ros::TransformListener tfListener{tfBuffer, node};
 
   rclcpp::sleep_for(std::chrono::milliseconds(50));  // Wait for timer callback to be called
   rclcpp::spin_some(footprint_node);
@@ -151,7 +151,7 @@ TEST_F(TestBaseFootprint, no_overlapping_time)
   br.sendTransform(tf);
 
   tf2_ros::Buffer tfBuffer{node->get_clock()};
-  tf2_ros::TransformListener tfListener{tfBuffer};
+  tf2_ros::TransformListener tfListener{tfBuffer, node};
 
   rclcpp::sleep_for(std::chrono::milliseconds(50));  // Wait for timer callback to be called
   rclcpp::spin_some(footprint_node);
@@ -161,4 +161,13 @@ TEST_F(TestBaseFootprint, no_overlapping_time)
   {
     tfBuffer.lookupTransform("base_link", "base_footprint", tf2::TimePointZero);
   }, tf2::TransformException);
+}
+
+TEST_F(TestBaseFootprint, test_tf_listener_node_isnt_created)
+{
+  // Ensure the tf listener does not create its own tf listener node.
+  // See https://github.com/ros-sports/humanoid_base_footprint/pull/41 for more details.
+  auto footprint_node = std::make_shared<humanoid_base_footprint::BaseFootprintBroadcaster>();
+  auto nodes = footprint_node->get_node_names();
+  ASSERT_EQ(nodes.size(), 1u);
 }
