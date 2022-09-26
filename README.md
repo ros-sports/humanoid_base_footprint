@@ -32,7 +32,7 @@ Definition of the base footprint frame (from [here](https://www.ros.org/reps/rep
 >
 >Rationale: base_footprint provides a fairly stable 2D planar representation of the humanoid even while walking and swaying with the base_link.
 
-The node listens to [Phase]() msgs that define the current stance of the robot. By default, it will listen on the `walk_support_state` topic, but you can define a list of topics on the `support_state_topics` parameter.  
+The node listens to [Phase](https://github.com/ros-sports/biped_interfaces/blob/rolling/msg/Phase.msg) msgs that define the current stance of the robot. By default, it will listen on the `walk_support_state` topic, but you can define a list of topics on the `support_state_topics` parameter.  
 
 If the links of your robot have non-standard names you can set the following parameters:
 `base_link_frame`, `r_sole_frame`, `l_sole_frame`, `l_sole_frame`, `odom_frame`
