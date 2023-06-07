@@ -1,6 +1,8 @@
 # humanoid_base_footprint
 
-[![Build and Test (rolling)](../../actions/workflows/build_and_test_rolling.yaml/badge.svg)](../../actions/workflows/build_and_test_rolling.yaml)
+[![Build and Test (humble)](../../actions/workflows/build_and_test_humble.yaml/badge.svg?branch=master)](../../actions/workflows/build_and_test_humble.yaml?query=branch:master)
+[![Build and Test (iron)](../../actions/workflows/build_and_test_iron.yaml/badge.svg?branch=master)](../../actions/workflows/build_and_test_iron.yaml?query=branch:master)
+[![Build and Test (rolling)](../../actions/workflows/build_and_test_rolling.yaml/badge.svg?branch=master)](../../actions/workflows/build_and_test_rolling.yaml?query=branch:master)
 
 This ROS2 package includes a node which provides the base footprint frame for any humanoid robot following [REP - 120](https://www.ros.org/reps/rep-0120.html).
 
@@ -32,10 +34,10 @@ Definition of the base footprint frame (from [here](https://www.ros.org/reps/rep
 >
 >Rationale: base_footprint provides a fairly stable 2D planar representation of the humanoid even while walking and swaying with the base_link.
 
-The node listens to [Phase](https://github.com/ros-sports/biped_interfaces/blob/rolling/msg/Phase.msg) msgs that define the current stance of the robot. By default, it will listen on the `walk_support_state` topic, but you can define a list of topics on the `support_state_topics` parameter.  
+The node listens to [Phase](https://github.com/ros-sports/biped_interfaces/blob/rolling/msg/Phase.msg) msgs that define the current stance of the robot. By default, it will listen on the `walk_support_state` topic, but you can define a list of topics on the `support_state_topics` parameter.
 
 If the links of your robot have non-standard names you can set the following parameters:
 `base_link_frame`, `r_sole_frame`, `l_sole_frame`, `l_sole_frame`, `odom_frame`
- 
+
 
 The resulting frame will be published as `base_footprint` but the name can be changed by setting the `base_footprint_frame` parameter.
