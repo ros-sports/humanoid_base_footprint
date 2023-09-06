@@ -20,6 +20,7 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <memory>
 #include <string>
+#include <vector>
 #include <biped_interfaces/msg/phase.hpp>
 #include <rclcpp/node.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
@@ -57,9 +58,7 @@ private:
   bool is_left_support_, got_support_foot_;
   std::string base_link_frame_, base_footprint_frame_, r_sole_frame_, l_sole_frame_, odom_frame_;
   void supportFootCallback(const biped_interfaces::msg::Phase msg);
-  rclcpp::Subscription<biped_interfaces::msg::Phase>::SharedPtr walking_support_foot_subscriber_;
-  rclcpp::Subscription<biped_interfaces::msg::Phase>::SharedPtr
-    dynamic_kick_support_foot_subscriber_;
+  std::vector<rclcpp::Subscription<biped_interfaces::msg::Phase>::SharedPtr> phase_subs_;
 
   std::unique_ptr<tf2_ros::TransformBroadcaster> tfBroadcaster_;
   rclcpp::TimerBase::SharedPtr timer_;
