@@ -20,6 +20,8 @@
 #include <tf2_eigen/tf2_eigen.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
+// THIS IS FOR A CI TEST DO NOT MERGE!
+
 // This has to be included after #include <tf2_geometry_msgs/tf2_geometyr_msgs.hpp>, due to reasons
 // explained in https://github.com/ros2/geometry2/pull/485
 // "tf2/utils.h" is used instead of <tf2/utils.h> to prevent ament_cpplint from complaining about
