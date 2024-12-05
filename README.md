@@ -1,7 +1,7 @@
 # humanoid_base_footprint
 
 [![Build and Test (humble)](../../actions/workflows/build_and_test_humble.yaml/badge.svg?branch=master)](../../actions/workflows/build_and_test_humble.yaml?query=branch:master)
-[![Build and Test (iron)](../../actions/workflows/build_and_test_iron.yaml/badge.svg?branch=master)](../../actions/workflows/build_and_test_iron.yaml?query=branch:master)
+[![Build and Test (jazzy)](../../actions/workflows/build_and_test_jazzy.yaml/badge.svg?branch=master)](../../actions/workflows/build_and_test_jazzy.yaml?query=branch:master)
 [![Build and Test (rolling)](../../actions/workflows/build_and_test_rolling.yaml/badge.svg?branch=master)](../../actions/workflows/build_and_test_rolling.yaml?query=branch:master)
 
 This ROS2 package includes a node which provides the base footprint frame for any humanoid robot following [REP - 120](https://www.ros.org/reps/rep-0120.html).
