@@ -50,13 +50,13 @@ BaseFootprintBroadcaster::BaseFootprintBroadcaster(const rclcpp::NodeOptions &)
   std::vector<std::string> support_state_topics;
   this->get_parameter("support_state_topics", support_state_topics);
   for (auto topic : support_state_topics) {
-    this->create_subscription<biped_interfaces::msg::Phase>(
+    phase_subs_.emplace_back(this->create_subscription<biped_interfaces::msg::Phase>(
       topic,
       1,
       std::bind(
         &BaseFootprintBroadcaster::supportFootCallback,
         this,
-        _1));
+        _1)));
   }
 
   tfBroadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(this);
