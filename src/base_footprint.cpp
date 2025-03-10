@@ -17,7 +17,6 @@
 #include <functional>
 #include <humanoid_base_footprint/base_footprint.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
-#include <tf2_eigen/tf2_eigen.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 // This has to be included after #include <tf2_geometry_msgs/tf2_geometyr_msgs.hpp>, due to reasons
@@ -132,24 +131,11 @@ void BaseFootprintBroadcaster::timerCallback()
     base_footprint.pose.position.y =
       non_support_foot_in_support_foot_frame.transform.translation.y / 2;
 
-
-    // get yaw from base link
-    double yaw;
-    yaw = tf2::getYaw(odom.transform.rotation);
-
-    // Convert tf to eigen quaternion
-    Eigen::Quaterniond eigen_quat
-      (odom.transform.rotation.w, odom.transform.rotation.x, odom.transform.rotation.y,
-      odom.transform.rotation.z);
-    // can't use this out of some reasons tf2::convert(odom.transform.rotation, eigen_quat);
-
-    // Remove yaw from quaternion
-    Eigen::Quaterniond eigen_quat_out;
-    rot_conv::QuatNoEYaw(eigen_quat, eigen_quat_out);
-
-    // Convert eigen to tf quaternion
-    tf2::Quaternion tf_quat_out;
-    tf2::convert(eigen_quat_out, tf_quat_out);
+    double yaw = rot_conv::FYawOfQuat(Eigen::Quaterniond(
+      odom.transform.rotation.w, 
+      odom.transform.rotation.x, 
+      odom.transform.rotation.y,
+      odom.transform.rotation.z));
 
     // pitch and roll from support foot, yaw from base link
     tf2::Quaternion rotation;
