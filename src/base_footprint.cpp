@@ -131,11 +131,12 @@ void BaseFootprintBroadcaster::timerCallback()
     base_footprint.pose.position.y =
       non_support_foot_in_support_foot_frame.transform.translation.y / 2;
 
-    double yaw = rot_conv::FYawOfQuat(Eigen::Quaterniond(
-      odom.transform.rotation.w,
-      odom.transform.rotation.x,
-      odom.transform.rotation.y,
-      odom.transform.rotation.z));
+    double yaw = rot_conv::FYawOfQuat(
+        Eigen::Quaterniond(
+          odom.transform.rotation.w,
+          odom.transform.rotation.x,
+          odom.transform.rotation.y,
+          odom.transform.rotation.z));
 
     // pitch and roll from support foot, yaw from base link
     tf2::Quaternion rotation;
